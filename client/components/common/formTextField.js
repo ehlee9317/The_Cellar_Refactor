@@ -8,15 +8,18 @@ const useStyles = makeStyles(() => ({
   }
 }))
 
-const FormTextField = (error, label, value, onChange, helperText) => {
+const FormTextField = props => {
+  const {labelName, error, helperText, id, value, onChange} = props
+
+  console.log('@@@ props', props)
   const classes = useStyles()
 
   return (
     <FormControl required>
       <TextField
         error={error}
-        label={label}
-        id={label}
+        label={labelName}
+        id={id}
         value={value}
         onChange={onChange}
         helperText={helperText}
