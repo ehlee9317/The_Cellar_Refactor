@@ -13,7 +13,6 @@ import {
 } from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import {useDispatch, useSelector} from 'react-redux'
-import {Alarm} from '@material-ui/icons'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -37,9 +36,6 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     justifyContent: 'center',
     flexDirection: 'column'
-  },
-  formElm: {
-    paddingBottom: '2%'
   },
   selectElm: {
     paddingBottom: '2%',
@@ -69,12 +65,19 @@ const EditWine = props => {
 
   //set Errors
   const [errorMessage, setErrorMessage] = useState({
-    errorName: '',
-    errorEmail: '',
-    errorPassword: ''
+    errorName: false,
+    errorPrice: false,
+    // errorType: false,
+    errorYear: false,
+    errorOrigin: false,
+    errorDescription: false
   })
 
-  // const {errorName, errorEmail, errorPassword} = state
+  const [nameHelperText, setNameHelperText] = useState('Name field is required')
+
+  const [priceHelperText, setPriceHelperText] = useState(
+    'Price field is required'
+  )
 
   //Prep the tools
   const classes = useStyles()
@@ -124,44 +127,93 @@ const EditWine = props => {
     setState({...state, type: event.target.value})
   }
 
-  //handle submit function - Submiting form
   const handleSubmit = () => {
-    dispatch(updateWine(state))
-    if (!state.name) {
-      setErrorMessage({
-        errorName: state.name === ''
-        // errorPrice: state.price === '',
-      })
+    const {name, price, year, origin, description} = state
+
+    const {
+      errorName,
+      errorPrice,
+      errorYear,
+      errorOrigin,
+      errorDescription
+    } = errorMessage
+
+    // Check to make sure below input fields are NOT EMPTY
+    setErrorMessage({
+      errorName: name === '',
+      errorPrice: price === '',
+      errorYear: year === '',
+      errorOrigin: origin === '',
+      errorDescription: description === ''
+    })
+
+    // // Check to make sure Name doesn't have any special characters
+    // if(name !== name.replace(/[^A-Za-z0-9 ]/g, "")) {
+    //   setErrorMessage({ errorName: true });
+    //   setNameHelperText('Please remove any special characters.');
+    // } else {
+    //   setErrorMessage({ errorName: false });
+    //   setNameHelperText("Name field is required");
+    // }
+
+    // Check to make sure price is NUMBER
+    if (isNaN(price)) {
+      setErrorMessage({errorPrice: true})
+      setPriceHelperText('Please only input numbers for price.')
+    } else if (price === '') {
+      setErrorMessage({errorPrice: true})
+      setPriceHelperText('Price field is required')
+    } else {
+      setErrorMessage({errorPrice: false})
+      setPriceHelperText(' ')
     }
+
+    // if( errorName === false && errorPrice === false && errorYear === false && errorOrigin === false && errorDescription === false) {
+    //   dispatch(updateWine(state));
+    // }
+
+    if (name && price && year && origin && description) {
+      dispatch(updateWine(state))
+    }
+
+    console.log('@@@@ errorMessage', errorMessage)
   }
+
+  const {
+    errorName,
+    errorPrice,
+    errorYear,
+    errorOrigin,
+    errorDescription
+  } = errorMessage
 
   //Form template
   const form = () => {
     return (
       <form className={classes.form} onSubmit={handleSubmit} name={name}>
-        <h1 className={classes.title}>Edit {wineInfo.name}</h1>
-
+        ;
+        <h1 className={classes.title}>Edit {wineInfo.name}</h1>;
         <FormTextField
-          error={state.errorName}
+          error={errorName}
           labelName="Wine Name"
           id="name"
           value={state.name}
           onChange={handleChange}
-          helperText="Wine Name field is required"
+          // helperText="Wine Name field is required"
+          helperText={nameHelperText}
         />
-
         <FormTextField
-          error={state.errorName}
+          error={errorPrice}
           labelName="Price"
           id="price"
           value={state.price}
           onChange={handleChange}
-          helperText="Price field is required"
+          // helperText="Price field is required"
+          helperText={priceHelperText}
         />
-
         <FormControl required>
           <Select
-            error={state.errorName}
+            // error={errorType}
             id="type"
             label="Type"
             value={state.type}
@@ -179,36 +231,32 @@ const EditWine = props => {
             Type field is required
           </FormHelperText>
         </FormControl>
-
         <FormTextField
-          error={state.errorName}
+          error={errorYear}
           labelName="Year"
           id="year"
           value={state.year}
           onChange={handleChange}
           helperText="Year field is required"
         />
-
         <FormTextField
-          error={state.errorName}
+          error={errorOrigin}
           labelName="Origin"
           id="origin"
           value={state.origin}
           onChange={handleChange}
           helperText="Origin field is required"
         />
-
         <FormTextField
-          error={state.errorName}
+          error={errorDescription}
           labelName="Description"
           id="description"
           value={state.description}
           onChange={handleChange}
           helperText="Description field is required"
         />
-
         <FormTextField
-          error={state.errorName}
+          // error={state.errorName}
           labelName="Image URL"
           id="imageUrl"
           value={
@@ -217,7 +265,6 @@ const EditWine = props => {
           onChange={handleChange}
           helperText="ImageURL field is optional"
         />
-
         <Button
           className={classes.button}
           onClick={handleSubmit}

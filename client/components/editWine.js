@@ -140,7 +140,7 @@ const EditWine = props => {
             value={state.price}
             onChange={handleChange}
             className={classes.formElm}
-            helperText="Price field is required"
+            helperText="Price field"
             variant="outlined"
             required
           />
